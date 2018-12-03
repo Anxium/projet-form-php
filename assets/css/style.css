@@ -1,0 +1,37 @@
+@font-face {
+    font-family: 'bellota';
+    src: url('assets/fonts/Bellota-Regular.otf') format('truetype');
+}
+    
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #FFF;
+    display: flex;
+    flex-direction: column;
+    font-family: 'bellota', 'sans-serif';
+}
+
+img {
+    margin: 25px 0;
+    width: 300px;
+}
+
+.formulaire {
+    text-align: center;
+    background: rgba(21, 197, 189, .3);
+    border-radius: 10px;
+    padding: 20px 50px!important;
+}
+
+.genre {
+    margin-top: 12px;
+}
+
+input[type='submit'] {
+    color: #FFF;
+}
