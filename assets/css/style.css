@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'bellota';
-    src: url('assets/fonts/Bellota-Regular.otf') format('truetype');
+    src: url('../fonts/Bellota-Regular.otf') format('truetype');
 }
     
 * {
@@ -10,14 +10,17 @@
 body {
     margin: 0;
     padding: 0;
-    background: #FFF;
+    height: 100vh;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #FFF;
     font-family: 'bellota', 'sans-serif';
 }
 
 img {
-    margin: 25px 0;
+    margin: 20px 0 40px 0;
     width: 300px;
 }
 
@@ -32,6 +35,6 @@ img {
     margin-top: 12px;
 }
 
-input[type='submit'] {
-    color: #FFF;
+.wrong {
+    border-bottom: 2px solid red!important;
 }
