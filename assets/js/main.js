@@ -10,8 +10,4 @@ $(document).ready(function(){
             $(this).data('value', $(this).val());
         }
     });
-
-    $('.envoi').click(function() {
-        $('input').removeAttr('disabled');
-    })
 });

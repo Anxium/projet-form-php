@@ -1,38 +1,103 @@
 <?php
+    $lastNameErr = $firstNameErr = $genderErr = $countryErr = $mailErr = $messageErr = "";
+    $lastName = $firstName = $gender = $country = $mail = $message = "";
 
-if (isset($_POST['name']) && isset($_POST['gender']) && isset($_POST['country']) && isset($_POST['mail']) && isset($_POST['message']) && isset($_POST['subject'])) {
+    if(isset($_POST['lastName'])) {
+       $result = trim(filter_input(INPUT_POST, 'lastName', FILTER_SANITIZE_STRING));
 
-    $options = array(
-        'name' 	        => FILTER_SANITIZE_STRING,
-        'gender'        => FILTER_SANITIZE_STRING,
-        'country' 		=> FILTER_SANITIZE_STRING,
-        'mail' 		    => FILTER_VALIDATE_EMAIL,
-        'message' 		=> FILTER_SANITIZE_STRING
-    );
+        if(empty($result)) {
+            $lastNameErr = "Un nom est requis";
+        } elseif(!preg_match("/^[a-zA-Z éèçà-]*$/", $result)) {
+            $lastNameErr = "Seulement les lettres et les espaces sont autorisés";
+        } else {
+            $lastName = $result;
+        }
+    }
 
-    $subject = $_POST['subject'];
+    if(isset($_POST['firstName'])) {
+        $result = trim(filter_input(INPUT_POST, 'firstName', FILTER_SANITIZE_STRING));
 
-    $result = filter_input_array(INPUT_POST, $options);
-    $result += filter_var_array($subject, FILTER_SANITIZE_STRING);
+        if(empty($result)) {
+            $firstNameErr = "Un prénom est requis";
+        } elseif(!preg_match("/^[a-zA-Z éèçà-]*$/", $result)) {
+            $firstNameErr = "Seulement les lettres et les espaces sont autorisés";
+        } else {
+            $firstName = $result;
+        }
+    }
 
-    $flag = false;
+    if(isset($_POST['gender'])) {
+        $result = trim(filter_input(INPUT_POST, 'gender', FILTER_SANITIZE_STRING));
 
-    print_r($result);
-}
+        if(empty($result)) {
+            $genderErr = "Un genre est requis";
+        } elseif($result != 'Homme' && $result != 'Femme') {
+            $genderErr = "Seulement les genres 'Homme' et 'Femme' sont autorisés";
+        } else {
+            $gender = $result;
+        }
+    }
 
+    if(isset($_POST['country'])) {
+        $result = trim(filter_input(INPUT_POST, 'country', FILTER_SANITIZE_STRING));
 
+        if(empty($result)) {
+            $countryErr = "Un Pays est requis";
+        } elseif(!preg_match("/^[a-zA-Z éèçà-]*$/", $result)) {
+            $countryErr = "Seulement les lettres et les espaces sont autorisés";
+        } else {
+            $country = $result;
+        }
+    }
+
+    if(isset($_POST['mail'])) {
+        $result = trim($_POST['mail']);
+
+        if(empty($result)) {
+            $mailErr = "Une adresse mail est requise";
+        } elseif(!filter_var($result, FILTER_VALIDATE_EMAIL)) {
+            $mailErr = "Une adresse mail valide est requise";
+        } else {
+            $mail = $result;
+        }
+    }
+
+    if(isset($_POST['subject'])) {
+        $result = filter_var_array($_POST['subject'], FILTER_SANITIZE_STRING);
+
+        if(isset($result[0]) && isset($result[1]) && isset($result[2])) {
+            $subject = trim($result[0]). ' - ' . trim($result[1]) . ' - ' . trim($result[2]);
+        } elseif(isset($result[0]) && isset($result[1])) {
+            $subject = trim($result[0]). ' - ' . trim($result[1]);
+        } else {
+            $subject = trim($result[0]);
+        }
+    } else {
+        $subject = "Autre";
+    }
     
+    if(isset($_POST['message'])) {
+        $result = trim(filter_input(INPUT_POST, 'message', FILTER_SANITIZE_STRING));
+
+        if(empty($result)) {
+            $messageErr = "Un message est requis";
+        } elseif(!filter_var($result, FILTER_SANITIZE_STRING)) {
+            $messageErr = "Un message valide est requis";
+        } else {
+            $message = $result;
+        }
+    }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
     <title>Exercices sur les formulaires</title>
     <link rel="stylesheet" type="text/css" href="assets/css/materialize.css"/>
-    <link rel="stylesheet" type="text/css" href="assets/css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/main.css"/>
     <link rel="icon" type="image/png" href="assets/img/hackers-poulette-logo.png"/>
 </head>
 <body>
@@ -44,93 +109,38 @@ if (isset($_POST['name']) && isset($_POST['gender']) && isset($_POST['country'])
             <div class="col m10 offset-m1 s12 formulaire">
                 <form action="index.php" method="POST">
                     <div class="row">
-                        <div class="input-field col m6 s12">
-                            <?php
-                                if (isset($result['name'])) {
-                                    if(empty($result['name'])) {
-                                        echo '<input type="text" name="name" class="wrong" required/>';
-                                    } else {
-                                        echo '<input type="text" name="name" value="' . $result['name'] . '" required disabled/>';
-                                    }
-                                } else {
-                                    echo '<input type="text" name="name"/>';
-                                }
-                            ?>
-                            <label for="name">Nom & prénom</label>
+                        <div class="input-field col m3 s12">
+                            <input type="text" name="lastName" value="<?php if(isset($lastName)) echo $lastName;?>"/>
+                            <label for="name">Nom</label>
+                            <span class="error"><?php echo $lastNameErr;?></span>
+                        </div>
+                        <div class="input-field col m3 s12">
+                            <input type="text" name="firstName" value="<?php if(isset($firstName)) echo $firstName;?>"/>
+                            <label for="name">Prénom</label>
+                            <span class="error"><?php echo $firstNameErr;?></span>
                         </div>
                         <div class="col m6 s12 genre">
-                            <?php
-                                if (isset($result['gender'])) {
-                                    if(empty($result['gender'])) { ?>
-                                        <label class="col m6 s6 genre wrong">
-                                            <input type="radio" name="gender" value="Homme" required/>
-                                            <span>Homme</span>
-                                        </label>
-                                        <label class="col m6 s6 genre wrong">
-                                            <input type="radio" name="gender" value="Femme" required/>
-                                            <span>Femme</span>
-                                        </label>
-                                    <?php } else { 
-                                        if ($result['gender'] == 'Homme') { ?>
-                                            <label class="col m6 s6 genre">
-                                                <input type="radio" name="gender" value="Homme" checked disabled required/>
-                                                <span>Homme</span>
-                                            </label>
-                                            <label class="col m6 s6 genre">
-                                                <input type="radio" name="gender" value="Femme" disabled required/>
-                                                <span>Femme</span>
-                                            </label>
-                                        <?php } else { ?>
-                                            <label class="col m6 s6 genre">
-                                                <input type="radio" name="gender" value="Homme" disabled required/>
-                                                <span>Homme</span>
-                                            </label>
-                                            <label class="col m6 s6 genre">
-                                                <input type="radio" name="gender" value="Femme" checked disabled required/>
-                                                <span>Femme</span>
-                                            </label>
-                                        <?php }
-                                    }
-                                } else {?>
-                                    <label class="col m6 s6 genre">
-                                        <input type="radio" name="gender" value="Homme" required/>
-                                        <span>Homme</span>
-                                    </label>
-                                    <label class="col m6 s6 genre">
-                                        <input type="radio" name="gender" value="Femme" required/>
-                                        <span>Femme</span>
-                                    </label>
-                                <?php } ?>
+                            <label class="col m6 s6 genre">
+                                <input type="radio" name="gender" value="Homme" <?php if($gender=="Homme") echo "checked";?>/>
+                                <span>Homme</span>
+                            </label>
+                            <label class="col m6 s6 genre">
+                                <input type="radio" name="gender" value="Femme" <?php if($gender=="Femme") echo "checked";?>/>
+                                <span>Femme</span>
+                                <span class="error"><?php echo $genderErr;?></span>
+                            </label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col m6 s12">
-                            <?php
-                                if (isset($result['country'])) {
-                                    if(empty($result['country'])) {
-                                        echo '<input type="text" name="country" class="wrong" required/>';
-                                    } else {
-                                        echo '<input type="text" name="country" value="' . $result['country'] . '" required disabled/>';
-                                    }
-                                } else {
-                                    echo '<input type="text" name="country"/>';
-                                }
-                            ?>
+                            <input type="text" name="country" value="<?php if(isset($country)) echo $country;?>"/>
                             <label for="country">Pays</label>
+                            <span class="error"><?php echo $countryErr;?></span>
                         </div>
                         <div class="input-field col m6 s12">
-                            <?php
-                                if (isset($result['mail'])) {
-                                    if($result['mail'] == false) {
-                                        echo '<input type="text" name="mail" class="wrong" required/>';
-                                    } else {
-                                        echo '<input type="text" name="mail" value="' . $result['mail'] . '" required disabled/>';
-                                    }
-                                } else {
-                                    echo '<input type="text" name="mail"/>';
-                                }
-                            ?>
+                            <input type="text" name="mail" value="<?php if(isset($mail)) echo $mail;?>"/>
                             <label for="mail">E-mail</label>
+                            <span class="error"><?php echo $mailErr;?></span>
                         </div>
                     </div>
                     <div class="row">
@@ -143,25 +153,16 @@ if (isset($_POST['name']) && isset($_POST['gender']) && isset($_POST['country'])
                                 <option value="Livraison">Livraison</option>
                                 <option value="Question diverse">Question diverse</option>
                                 <option value="Problèmes techniques">Problèmes techniques</option>
-                                <option value="Autres">Autres</option>
+                                <option value="Autre">Autre</option>
                             </select>
                             <label for="subject">Sujet</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col m12 s12">
-                            <?php
-                                if (isset($result['message'])) {
-                                    if(empty($result['message'])) {
-                                        echo '<textarea class="materialize-textarea wrong" name="message" required></textarea>';
-                                    } else {
-                                        echo '<textarea class="materialize-textarea" name="message" class="wrong" required disabled>' . $result['message'] . '</textarea>';
-                                    }
-                                } else {
-                                    echo '<input type="text" name="message"/>';
-                                }
-                            ?>
+                            <textarea class="materialize-textarea" name="message" placeholder="Bonjour Axel, je vous contacte pour..."><?php if(isset($message)) echo $message;?></textarea>
                             <label for="message">Message</label>
+                            <span class="error"><?php echo $messageErr;?></span>
                         </div>
                     </div>
                     <div class="row">
@@ -172,11 +173,8 @@ if (isset($_POST['name']) && isset($_POST['gender']) && isset($_POST['country'])
         </div>
     </div>
 
-
-
     <script src="assets/js/jquery-3.3.1.min.js"></script>
     <script src="assets/js/materialize.min.js"></script>
     <script src="assets/js/main.js"></script>
-
 </body>
 </html>

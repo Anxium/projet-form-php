@@ -35,6 +35,10 @@ img {
     margin-top: 12px;
 }
 
-.wrong {
-    border-bottom: 2px solid red!important;
+.error {
+    font-size: 12px;
+    font-weight: 700;
+    font-family: sans-serif;
+    color: #f00000;
+    margin: 4px 0 0 0;
 }
