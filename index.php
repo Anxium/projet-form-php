@@ -65,12 +65,18 @@
     if(isset($_POST['subject'])) {
         $result = filter_var_array($_POST['subject'], FILTER_SANITIZE_STRING);
 
-        if(isset($result[0]) && isset($result[1]) && isset($result[2])) {
-            $subject = trim($result[0]). ' - ' . trim($result[1]) . ' - ' . trim($result[2]);
-        } elseif(isset($result[0]) && isset($result[1])) {
-            $subject = trim($result[0]). ' - ' . trim($result[1]);
-        } else {
-            $subject = trim($result[0]);
+        switch (sizeof($result)) { // Nécéssaire dans le cas ou JS est désactivé | Vérifie si le nombre de sujets ne dépasse pas 3, sinon erreur.
+            case 1:
+                $subject = trim($result[0]);
+                break;
+            case 2:
+                $subject = trim($result[0]). ' - ' . trim($result[1]);
+                break;
+            case 3:
+                $subject = trim($result[0]). ' - ' . trim($result[1]) . ' - ' . trim($result[2]);
+                break;
+            default:
+                $subjectErr = "Vous ne pouvez sélectionner que 3 sujets maximum.";
         }
     } else {
         $subject = "Autre";
@@ -91,7 +97,7 @@
     if(!empty($lastName) && !empty($firstName) && !empty($gender) && !empty($country) && !empty($mail) && !empty($subject) && !empty($message) && empty($_POST['honeypot'])) {
         echo '<p>Nom : ' . $lastName . ' & Prénom : ' . $firstName . '<br/> Genre : ' . $gender . '<br/> Pays : ' . $country . '<br/> Mail : ' . $mail . '<br/> Sujet : ' . $subject . '<br/> Message : ' . $message . '</p>';
     } elseif(!empty($_POST['honeypot'])) {
-        echo 'Touche pas au HTML qui/quoi que tu sois.';
+        echo 'Touche pas au code qui/quoi que tu sois.';
     }
 ?>
 
@@ -164,6 +170,7 @@
                                 <option value="Autre">Autre</option>
                             </select>
                             <label for="subject">Sujet</label>
+                            <span class="error"><?php echo $subjectErr;?></span>
                         </div>
                     </div>
                     <div class="row">
