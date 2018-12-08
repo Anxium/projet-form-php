@@ -1,6 +1,6 @@
 <?php
-    $lastNameErr = $firstNameErr = $genderErr = $countryErr = $mailErr = $messageErr = "";
-    $lastName = $firstName = $gender = $country = $mail = $message = "";
+    $lastNameErr = $firstNameErr = $genderErr = $countryErr = $mailErr = $subjectErr = $messageErr = "";
+    $lastName = $firstName = $gender = $country = $mail = $subject = $message = "";
 
     if(isset($_POST['lastName'])) {
        $result = trim(filter_input(INPUT_POST, 'lastName', FILTER_SANITIZE_STRING));
@@ -32,7 +32,7 @@
         if(empty($result)) {
             $genderErr = "Un genre est requis";
         } elseif($result != 'Homme' && $result != 'Femme') {
-            $genderErr = "Seulement les genres 'Homme' et 'Femme' sont autorisés";
+            $genderErr = "Seul les genres 'Homme' et 'Femme' sont autorisés";
         } else {
             $gender = $result;
         }
@@ -87,6 +87,12 @@
             $message = $result;
         }
     }
+
+    if(!empty($lastName) && !empty($firstName) && !empty($gender) && !empty($country) && !empty($mail) && !empty($subject) && !empty($message) && empty($_POST['honeypot'])) {
+        echo '<p>Nom : ' . $lastName . ' & Prénom : ' . $firstName . '<br/> Genre : ' . $gender . '<br/> Pays : ' . $country . '<br/> Mail : ' . $mail . '<br/> Sujet : ' . $subject . '<br/> Message : ' . $message . '</p>';
+    } elseif(!empty($_POST['honeypot'])) {
+        echo 'Touche pas au HTML qui/quoi que tu sois.';
+    }
 ?>
 
 <!DOCTYPE html>
@@ -123,12 +129,14 @@
                             <label class="col m6 s6 genre">
                                 <input type="radio" name="gender" value="Homme" <?php if($gender=="Homme") echo "checked";?>/>
                                 <span>Homme</span>
+
                             </label>
                             <label class="col m6 s6 genre">
                                 <input type="radio" name="gender" value="Femme" <?php if($gender=="Femme") echo "checked";?>/>
                                 <span>Femme</span>
-                                <span class="error"><?php echo $genderErr;?></span>
                             </label>
+                            <span class="error"><?php echo $genderErr;?></span>
+                            <input class="hide" type="radio" name="gender" value="" <?php if(!isset($_POST['gender'])) echo "checked";?>/>
                         </div>
                     </div>
                     <div class="row">
@@ -146,7 +154,7 @@
                     <div class="row">
                         <div class="input-field col m12 s12">
                             <select name="subject[]" multiple>
-                                <option value="" disabled>Choisir un sujet</option>
+                                <option value="" disabled>Choisir un sujet (OU autre)</option>
                                 <option value="Conseil">Conseil</option>
                                 <option value="Service avant-vente">Service avant-vente</option>
                                 <option value="Service après-vente">Service après-vente</option>
@@ -165,6 +173,7 @@
                             <span class="error"><?php echo $messageErr;?></span>
                         </div>
                     </div>
+                    <input type="text" name="honeypot" class="hide">
                     <div class="row">
                         <input class="btn envoi" type="submit" value="Envoyer"/>
                     </div>
