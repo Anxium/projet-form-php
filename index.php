@@ -70,10 +70,10 @@
                 $subject = trim($result[0]);
                 break;
             case 2:
-                $subject = trim($result[0]). ' - ' . trim($result[1]);
+                $subject = trim($result[0]). ' & ' . trim($result[1]);
                 break;
             case 3:
-                $subject = trim($result[0]). ' - ' . trim($result[1]) . ' - ' . trim($result[2]);
+                $subject = trim($result[0]). ' & ' . trim($result[1]) . ' & ' . trim($result[2]);
                 break;
             default:
                 $subjectErr = "Vous ne pouvez sélectionner que 3 sujets maximum.";
@@ -95,7 +95,26 @@
     }
 
     if(!empty($lastName) && !empty($firstName) && !empty($gender) && !empty($country) && !empty($mail) && !empty($subject) && !empty($message) && empty($_POST['honeypot'])) {
-        echo '<p>Nom : ' . $lastName . ' & Prénom : ' . $firstName . '<br/> Genre : ' . $gender . '<br/> Pays : ' . $country . '<br/> Mail : ' . $mail . '<br/> Sujet : ' . $subject . '<br/> Message : ' . $message . '</p>';
+        echo 'Mail envoyé';
+
+        $to = 'axel.avx@gmail.com';
+        $subject = 'Contact - ' . $lastName . ' ' . $firstName . ' | ' . $subject;
+        $eMessage = '
+        <html>
+         <head>
+          <title>Demande de contact</title>
+         </head>
+            ' . $message . '
+         </body>
+        </html>
+        ';
+
+        $headers[] = 'MIME-Version: 1.0';
+        $headers[] = 'Content-type: text/html; charset=iso-8859-1';
+        $headers[] = 'From: ' . $firstName . '<' . $mail . '>';
+
+        mail($to, $subject, $eMessage, implode("\r\n", $headers));
+
     } elseif(!empty($_POST['honeypot'])) {
         echo 'Touche pas au code qui/quoi que tu sois.';
     }
